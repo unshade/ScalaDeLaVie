@@ -44,6 +44,26 @@ object jeudelavie {
     case List(i1: Int, i2: Int) => ???
   }
 
+  @tailrec
+  def pointInferieurDroit(g: Grille, gPerma: Grille): (Int, Int) = g match {
+    case t::q => pointInferieurDroit(q, gPerma)
+    case t::q if t._1 == t._2 => if (t._1 == g.length / dimensionGrille(gPerma)) (t._1, t._2) else pointInferieurDroit(q, gPerma)
+    case Nil => (0, 0)
+  }
+
+  def dimensionGrille(g: Grille): Int = {
+    def aux(g: Grille, acc: Int) = {
+      5
+    }
+    aux(g, 0)
+  }
+
+  def pointSuperieurGauche(g: Grille): (Int, Int) = g match {
+    case t::q => ???
+    case Nil => ???
+  }
+  }
+
 
   // 3 Moteur de la simulation
   def voisines8(l: Int, c: Int): List[(Int, Int)] = {
