@@ -59,6 +59,7 @@ object jeudelavie {
         }
       }
     }
+
     aux(pSupGauche._1, pSupGauche._2)
   }
 
@@ -87,57 +88,64 @@ object jeudelavie {
   // 3 Moteur de la simulation
 
   def voisines8(l: Int, c: Int): List[(Int, Int)] = {
-    (l, c - 1)::(l - 1, c - 1)::(l - 1, c)::(l - 1, c + 1)::(l, c + 1)::(l + 1, c + 1)::(l + 1, c)::(l + 1, c - 1)::Nil
+    (l, c - 1) :: (l - 1, c - 1) :: (l - 1, c) :: (l - 1, c + 1) :: (l, c + 1) :: (l + 1, c + 1) :: (l + 1, c) :: (l + 1, c - 1) :: Nil
   }
 
   def survivantes(g: Grille): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t::q if(aux2(voisines8(t._1, t._2)) == 2 || aux2(voisines8(t._1, t._2)) == 3) => aux1(q, acc:::t::Nil)
-      case t::q => aux1(q, acc)
+      case t :: q if (aux2(voisines8(t._1, t._2)) == 2 || aux2(voisines8(t._1, t._2)) == 3) => aux1(q, acc ::: t :: Nil)
+      case t :: q => aux1(q, acc)
       case Nil => acc
     }
+
     def aux2(l: List[(Int, Int)]): Int = {
       l.intersect(g).length
     }
+
     aux1(g, List.empty)
   }
 
   def candidates(g: Grille): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t::q if(aux2(voisines8(t._1, t._2)) == 2 || aux2(voisines8(t._1, t._2)) == 3) => aux1(q, acc)
-      case t::q => aux1(q, acc:::t::Nil)
+      case t :: q if (aux2(voisines8(t._1, t._2)) == 2 || aux2(voisines8(t._1, t._2)) == 3) => aux1(q, acc)
+      case t :: q => aux1(q, acc ::: t :: Nil)
       case Nil => acc
     }
+
     def aux2(l: List[(Int, Int)]): Int = {
       l.intersect(g).length
     }
+
     aux1(g, List.empty)
   }
 
   def naissances(g: Grille): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t::q if(aux2(candidates(g)) == 3) => aux1(q, acc:::t::Nil)
-      case t::q => aux1(q, acc)
+      case t :: q if (aux2(candidates(g)) == 3) => aux1(q, acc ::: t :: Nil)
+      case t :: q => aux1(q, acc)
       case Nil => acc
     }
+
     def aux2(l: List[(Int, Int)]): Int = {
       l.intersect(g).length
     }
+
     aux1(g, List.empty)
   }
 
   @tailrec
   def jeuDeLaVie(init: Grille, n: Int): Unit = {
-    afficherGrille(init); if (n > 0) jeuDeLaVie((survivantes(init) ++ naissances(init)), n - 1)
+    afficherGrille(init);
+    if (n > 0) jeuDeLaVie((survivantes(init) ++ naissances(init)), n - 1)
   }
 
   // Partie 4
 
-  def voisines4(l:Int, c:Int):List[(Int, Int)] = {
-    (l, c - 1)::(l - 1, c)::(l, c + 1)::(l + 1, c)::Nil
+  def voisines4(l: Int, c: Int): List[(Int, Int)] = {
+    (l, c - 1) :: (l - 1, c) :: (l, c + 1) :: (l + 1, c) :: Nil
   }
 
   def naitJDLV(n: Int): Boolean = {
@@ -148,11 +156,26 @@ object jeudelavie {
     n == 2 || n == 3
   }
 
-  def naitF(n: Int) : Boolean = {
+  def naitF(n: Int): Boolean = {
     n == 1 || n == 3
   }
 
-  def survitF(n: Int) : Boolean = {
+  def survitF(n: Int): Boolean = {
     n == 2 || n == 4
+  }
+
+  def survivantesG(g: Grille, r: Int => Boolean, v: (Int, Int) => List[(Int, Int)]): Grille = {
+    @tailrec
+    def aux1(grille: Grille, acc: Grille): Grille = grille match {
+      case t :: q if (r(aux2(v(t._1, t._2)))) => aux1(q, acc ::: t :: Nil)
+      case t :: q => aux1(q, acc)
+      case Nil => acc
+    }
+
+    def aux2(l: List[(Int, Int)]): Int = {
+      l.intersect(g).length
+    }
+
+    aux1(g, List.empty)
   }
 }
