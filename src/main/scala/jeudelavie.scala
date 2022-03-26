@@ -86,11 +86,11 @@ object jeudelavie {
 
   // 3 Moteur de la simulation
 
-  def voisines8(l:Int, c:Int):List[(Int, Int)] = {
+  def voisines8(l: Int, c: Int): List[(Int, Int)] = {
     (l, c - 1)::(l - 1, c - 1)::(l - 1, c)::(l - 1, c + 1)::(l, c + 1)::(l + 1, c + 1)::(l + 1, c)::(l + 1, c - 1)::Nil
   }
 
-  def survivantes(g:Grille):Grille = {
+  def survivantes(g: Grille): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
       case t::q if(aux2(voisines8(t._1, t._2)) == 2 || aux2(voisines8(t._1, t._2)) == 3) => aux1(q, acc:::t::Nil)
@@ -103,7 +103,7 @@ object jeudelavie {
     aux1(g, List.empty)
   }
 
-  def candidates(g:Grille):Grille = {
+  def candidates(g: Grille): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
       case t::q if(aux2(voisines8(t._1, t._2)) == 2 || aux2(voisines8(t._1, t._2)) == 3) => aux1(q, acc)
@@ -116,7 +116,7 @@ object jeudelavie {
     aux1(g, List.empty)
   }
 
-  def naissances(g:Grille):Grille = {
+  def naissances(g: Grille): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
       case t::q if(aux2(candidates(g)) == 3) => aux1(q, acc:::t::Nil)
