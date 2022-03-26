@@ -44,6 +44,7 @@ object jeudelavie {
     val pInfDroit = pointInferieurDroit(g)
     val pSupGauche = pointSuperieurGauche(g)
 
+    @tailrec
     def aux(ligne: Int, colonne: Int): Unit = {
       if (g.contains((ligne, colonne))) {
         print('X')
@@ -86,4 +87,8 @@ object jeudelavie {
   }
 
   // 3 Moteur de la simulation
+
+  def voisines8(l:Int, c:Int):List[(Int, Int)] = {
+    (l, c - 1)::(l - 1, c - 1)::(l - 1, c)::(l - 1, c + 1)::(l, c + 1)::(l + 1, c + 1)::(l + 1, c)::(l + 1, c - 1)::Nil
+  }
 }
