@@ -193,4 +193,19 @@ object jeudelavie {
 
     aux1(g, List.empty)
   }
+
+  def naissancesG(g: Grille, r: Int => Boolean, v: (Int, Int) => List[(Int, Int)]): Grille = {
+    @tailrec
+    def aux1(grille: Grille, acc: Grille): Grille = grille match {
+      case t :: q if (r(aux2(candidatesG(g, r, v))) => aux1(q, acc ::: t :: Nil)
+      case t :: q => aux1(q, acc)
+      case Nil => acc
+    }
+
+    def aux2(l: List[(Int, Int)]): Int = {
+      l.intersect(g).length
+    }
+
+    aux1(g, List.empty)
+  }
 }
