@@ -209,11 +209,12 @@ object jeudelavie {
     aux1(g, List.empty)
   }
 
+  @tailrec
   def moteur(r: Int => Boolean, r2: Int => Boolean, v: (Int, Int) => List[(Int, Int)], init: Grille, n: Int): Unit = {
     afficherGrille(init); if (n > 0) moteur(r, r2, v, (survivantesG(init, r, v) ++ naissancesG(init, r, r2, v)), n - 1)
   }
 
-  def moteurFredkins(): Unit = {
-    moteur(chainesToGrille(liste))
+  def moteurFredkins(n: Int): Unit = {
+    moteur(survitF, naitF, voisines4, chainesToGrille(liste), n)
   }
 }
