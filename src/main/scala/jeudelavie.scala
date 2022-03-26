@@ -13,7 +13,7 @@ object jeudelavie {
 
   def main(args: Array[String]): Unit = {
 
-    println(chainesToGrille(liste))
+    afficherGrille(chainesToGrille(liste))
 
   }
 
@@ -41,56 +41,49 @@ object jeudelavie {
   }
 
   def afficherGrille(g: Grille): Unit = {
-    case List(i1: Int, i2: Int) => ???
-  }
+    val pInfDroit = pointInferieurDroit(g)
+    val pSupGauche = pointSuperieurGauche(g)
 
-  @tailrec
-  def pointInferieurDroit(g: Grille, gPerma: Grille): (Int, Int) = g match {
-    case t::q => pointInferieurDroit(q, gPerma)
-    case t::q if t._1 == t._2 => if (t._1 == g.length / dimensionGrille(gPerma)) (t._1, t._2) else pointInferieurDroit(q, gPerma)
-    case Nil => (0, 0)
-  }
-
-  def dimensionGrille(g: Grille): Int = {
-    def aux(g: Grille, acc: Int) = {
-      5
+    def aux(ligne: Int, colonne: Int): Unit = {
+      if (g.contains((ligne, colonne))) {
+        print('X')
+        aux(ligne, colonne + 1)
+      } else {
+        if (ligne < pInfDroit._1) {
+          if (colonne < pInfDroit._2) {
+            print(' ')
+            aux(ligne, colonne + 1)
+          } else {
+            println()
+            aux(ligne + 1, pSupGauche._2)
+          }
+        }
+      }
     }
-    aux(g, 0)
+    aux(pSupGauche._1, pSupGauche._2)
   }
 
-  def pointSuperieurGauche(g: Grille): (Int, Int) = g match {
-    case t::q => ???
-    case Nil => ???
-  }
+  def pointInferieurDroit(g: Grille): (Int, Int) = {
+    g reduce ((courrant, suivant) => {
+      (if (courrant._1 > suivant._1) {
+        courrant._1
+      } else suivant._1,
+        if (courrant._2 > suivant._2) {
+          courrant._2
+        } else suivant._2)
+    })
   }
 
+  def pointSuperieurGauche(g: Grille): (Int, Int) = {
+    g reduce ((courrant, suivant) => {
+      (if (courrant._1 < suivant._1) {
+        courrant._1
+      } else suivant._1,
+        if (courrant._2 < suivant._2) {
+          courrant._2
+        } else suivant._2)
+    })
+  }
 
   // 3 Moteur de la simulation
-  def voisines8(l: Int, c: Int): List[(Int, Int)] = {
-    if (l == 0) {
-      if (c == 0) {
-        List()
-      } else {
-        List()
-      }
-    } else {
-      List()
-    }
-  }
-
-  def survivantes(g:Grille):Grille = {
-    ???
-  }
-
-  def candidates(g:Grille):Grille = {
-    ???
-  }
-
-  def naissances(g:Grille):Grille = {
-    ???
-  }
-
-  def jeuDeLaVie(init:Grille, n:Int):Unit = {
-    ???
-  }
 }
