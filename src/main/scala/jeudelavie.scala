@@ -147,4 +147,12 @@ object jeudelavie {
   def survitJDLV(n: Int): Boolean = {
     n == 2 || n == 3
   }
+
+  def naitF(n: Int) : Boolean = {
+    n == 1 || n == 3
+  }
+
+  def survitF(n: Int) : Boolean = {
+    n == 2 || n == 4
+  }
 }
