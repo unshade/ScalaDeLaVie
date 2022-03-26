@@ -11,7 +11,7 @@ object jeudelavie {
 
   def main(args: Array[String]): Unit = {
 
-    afficherGrille(chainesToGrille(liste))
+    jeuDeLaVie(chainesToGrille(liste), 10)
 
   }
 
@@ -197,7 +197,7 @@ object jeudelavie {
   def naissancesG(g: Grille, r: Int => Boolean, r2: Int => Boolean, v: (Int, Int) => List[(Int, Int)]): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t :: q if (r2(aux2(candidatesG(g, r, v))) => aux1(q, acc ::: t :: Nil)
+      case t :: q if (r2(aux2(candidatesG(g, r, v)))) => aux1(q, acc ::: t :: Nil)
       case t :: q => aux1(q, acc)
       case Nil => acc
     }
