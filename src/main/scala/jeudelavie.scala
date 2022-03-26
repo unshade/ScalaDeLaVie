@@ -5,11 +5,9 @@ object jeudelavie {
   type Grille = List[(Int, Int)]
 
   val liste = List(
-    "XX ",
     " XX",
-    " XX",
-    "XXX"
-  )
+    "  X",
+    "XXX")
 
   def main(args: Array[String]): Unit = {
 
@@ -90,5 +88,18 @@ object jeudelavie {
 
   def voisines8(l:Int, c:Int):List[(Int, Int)] = {
     (l, c - 1)::(l - 1, c - 1)::(l - 1, c)::(l - 1, c + 1)::(l, c + 1)::(l + 1, c + 1)::(l + 1, c)::(l + 1, c - 1)::Nil
+  }
+
+  def survivantes(g:Grille):Grille = {
+    @tailrec
+    def aux1(grille: Grille, acc: Grille): Grille = grille match {
+      case t::q if(aux2(voisines8(t._1, t._2)) == 2 || aux2(voisines8(t._1, t._2)) == 3) => aux1(q, acc:::t::Nil)
+      case t::q => aux1(q, acc)
+      case Nil => acc
+    }
+    def aux2(l:List[(Int, Int)]): Int = {
+      l.intersect(g).length
+    }
+    aux1(g, List.empty)
   }
 }
