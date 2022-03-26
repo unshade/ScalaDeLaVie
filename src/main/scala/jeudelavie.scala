@@ -113,6 +113,19 @@ object jeudelavie {
     def aux2(l: List[(Int, Int)]): Int = {
       l.intersect(g).length
     }
-    aux1(g, List[(Int, Int)]())
+    aux1(g, List.empty)
+  }
+
+  def naissances(g:Grille):Grille = {
+    @tailrec
+    def aux1(grille: Grille, acc: Grille): Grille = grille match {
+      case t::q if(aux2(candidates(g)) == 3) => aux1(q, acc:::t::Nil)
+      case t::q => aux1(q, acc)
+      case Nil => acc
+    }
+    def aux2(l: List[(Int, Int)]): Int = {
+      l.intersect(g).length
+    }
+    aux1(g, List.empty)
   }
 }
