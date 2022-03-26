@@ -194,10 +194,10 @@ object jeudelavie {
     aux1(g, List.empty)
   }
 
-  def naissancesG(g: Grille, r: Int => Boolean, v: (Int, Int) => List[(Int, Int)]): Grille = {
+  def naissancesG(g: Grille, r: Int => Boolean, r2: Int => Boolean, v: (Int, Int) => List[(Int, Int)]): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t :: q if (r(aux2(candidatesG(g, r, v))) => aux1(q, acc ::: t :: Nil)
+      case t :: q if (r2(aux2(candidatesG(g, r, v))) => aux1(q, acc ::: t :: Nil)
       case t :: q => aux1(q, acc)
       case Nil => acc
     }
@@ -209,7 +209,11 @@ object jeudelavie {
     aux1(g, List.empty)
   }
 
-  def moteur(r: Int => Boolean, v: (Int, Int) => List[(Int, Int)], init: Grille, n: Int): Unit = {
-    afficherGrille(init); if (n > 0) jeuDeLaVie((survivantesG(init, r, v) ++ naissancesG(init, r, v)), n - 1)
+  def moteur(r: Int => Boolean, r2: Int => Boolean, v: (Int, Int) => List[(Int, Int)], init: Grille, n: Int): Unit = {
+    afficherGrille(init); if (n > 0) moteur(r, r2, v, (survivantesG(init, r, v) ++ naissancesG(init, r, r2, v)), n - 1)
+  }
+
+  def moteurFredkins(): Unit = {
+    moteur(chainesToGrille(liste))
   }
 }
