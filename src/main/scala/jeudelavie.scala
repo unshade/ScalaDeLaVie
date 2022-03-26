@@ -139,4 +139,12 @@ object jeudelavie {
   def voisines4(l:Int, c:Int):List[(Int, Int)] = {
     (l, c - 1)::(l - 1, c)::(l, c + 1)::(l + 1, c)::Nil
   }
+
+  def naitJDLV(n: Int): Boolean = {
+    n == 3
+  }
+
+  def survitJDLV(n: Int): Boolean = {
+    n == 2 || n == 3
+  }
 }
