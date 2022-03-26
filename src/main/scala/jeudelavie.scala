@@ -133,4 +133,10 @@ object jeudelavie {
   def jeuDeLaVie(init: Grille, n: Int): Unit = {
     afficherGrille(init); if (n > 0) jeuDeLaVie((survivantes(init) ++ naissances(init)), n - 1)
   }
+
+  // Partie 4
+
+  def voisines4(l:Int, c:Int):List[(Int, Int)] = {
+    (l, c - 1)::(l - 1, c)::(l, c + 1)::(l + 1, c)::Nil
+  }
 }
