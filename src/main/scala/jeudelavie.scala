@@ -128,4 +128,9 @@ object jeudelavie {
     }
     aux1(g, List.empty)
   }
+
+  @tailrec
+  def jeuDeLaVie(init: Grille, n: Int): Unit = {
+    afficherGrille(init); if (n > 0) jeuDeLaVie((survivantes(init) ++ naissances(init)), n - 1)
+  }
 }
