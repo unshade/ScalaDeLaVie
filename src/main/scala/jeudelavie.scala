@@ -97,9 +97,22 @@ object jeudelavie {
       case t::q => aux1(q, acc)
       case Nil => acc
     }
-    def aux2(l:List[(Int, Int)]): Int = {
+    def aux2(l: List[(Int, Int)]): Int = {
       l.intersect(g).length
     }
     aux1(g, List.empty)
+  }
+
+  def candidates(g:Grille):Grille = {
+    @tailrec
+    def aux1(grille: Grille, acc: Grille): Grille = grille match {
+      case t::q if(aux2(voisines8(t._1, t._2)) == 2 || aux2(voisines8(t._1, t._2)) == 3) => aux1(q, acc)
+      case t::q => aux1(q, acc:::t::Nil)
+      case Nil => acc
+    }
+    def aux2(l: List[(Int, Int)]): Int = {
+      l.intersect(g).length
+    }
+    aux1(g, List[(Int, Int)]())
   }
 }
