@@ -208,4 +208,8 @@ object jeudelavie {
 
     aux1(g, List.empty)
   }
+
+  def moteur(r: Int => Boolean, v: (Int, Int) => List[(Int, Int)], init: Grille, n: Int): Unit = {
+    afficherGrille(init); if (n > 0) jeuDeLaVie((survivantesG(init, r, v) ++ naissancesG(init, r, v)), n - 1)
+  }
 }
