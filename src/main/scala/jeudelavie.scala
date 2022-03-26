@@ -211,10 +211,19 @@ object jeudelavie {
 
   @tailrec
   def moteur(r: Int => Boolean, r2: Int => Boolean, v: (Int, Int) => List[(Int, Int)], init: Grille, n: Int): Unit = {
-    afficherGrille(init); if (n > 0) moteur(r, r2, v, (survivantesG(init, r, v) ++ naissancesG(init, r, r2, v)), n - 1)
+    afficherGrille(init);
+    if (n > 0) moteur(r, r2, v, (survivantesG(init, r, v) ++ naissancesG(init, r, r2, v)), n - 1)
   }
 
   def moteurFredkins(n: Int): Unit = {
     moteur(survitF, naitF, voisines4, chainesToGrille(liste), n)
+  }
+
+  def voisineVariante(l: Int, c: Int): List[(Int,Int)] = {
+    (l + 1, c + 1)::(l - 1, c + 1)::(l - 1, c - 1)::(l + 1, c - 1)::Nil
+  }
+
+  def variante(n: Int): Unit = {
+    moteur(survitF, naitF, voisineVariante, chainesToGrille(liste), n)
   }
 }
