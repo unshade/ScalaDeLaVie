@@ -3,15 +3,15 @@ import scala.annotation.tailrec
 object Steiner {
 
   type Grille = List[(Int, Int)]
-
   val liste = List(
     " XX",
     "  X",
     "XXX")
 
+
   def main(args: Array[String]): Unit = {
-    println(chainesToGrille(liste))
-    //jeuDeLaVie(chainesToGrille(liste), 5)
+
+    moteurJeuDeLaVie( 5)
 
   }
 
@@ -48,8 +48,8 @@ object Steiner {
         print('X')
         aux(ligne, colonne + 1)
       } else {
-        if (ligne < pInfDroit._1) {
-          if (colonne < pInfDroit._2) {
+        if (ligne <= pInfDroit._1) {
+          if (colonne <= pInfDroit._2) {
             print(' ')
             aux(ligne, colonne + 1)
           } else {
@@ -118,10 +118,7 @@ object Steiner {
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
       case t :: q =>
         val voisines = voisines8(t._1,t._2) filter(element => !g.contains(element))
-        if(voisines != Nil)
-          aux1(q, acc++voisines)
-        else
-          aux1(q,acc)
+        aux1(q, acc++voisines)
       case Nil => acc
     }
 
@@ -131,8 +128,8 @@ object Steiner {
   def naissances(g: Grille): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t :: q if aux2(voisines8(t._1,t._2)) == 3 => aux1(q, acc ++ List(t))
-      case _ :: q => aux1(q, acc)
+      case t :: q if(aux2(voisines8(t._1,t._2)) == 3) => aux1(q, acc++List(t))
+      case t :: q => aux1(q, acc)
       case Nil => acc
     }
 
@@ -146,11 +143,8 @@ object Steiner {
   @tailrec
   def jeuDeLaVie(init: Grille, n: Int): Unit = {
     if (n > 0) {
-      println(survivantes(init))
-      println(candidates(init))
-      println(naissances(init))
       afficherGrille(init)
-      println()
+      println("********************************************************")
       jeuDeLaVie(survivantes(init) ++ naissances(init),n-1)
     }
   }
@@ -174,13 +168,13 @@ object Steiner {
   }
 
   def survitF(n: Int): Boolean = {
-    n == 2 || n == 4
+    n == 1  || n == 3
   }
 
   def survivantesG(g: Grille, r: Int => Boolean, v: (Int, Int) => List[(Int, Int)]): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t :: q if r(aux2(v(t._1, t._2))) => aux1(q, acc ::: t :: Nil)
+      case t :: q if r(aux2(v(t._1, t._2))) => aux1(q, acc ++ List(t))
       case _ :: q => aux1(q, acc)
       case Nil => acc
     }
@@ -189,14 +183,26 @@ object Steiner {
       l.intersect(g).length
     }
 
-    aux1(g, List.empty)
+    doublonRemove(aux1(g, List.empty), Nil)
   }
 
-  def candidatesG(g: Grille, r: Int => Boolean, v: (Int, Int) => List[(Int, Int)]): Grille = {
+  def candidatesG(g: Grille, v: (Int, Int) => List[(Int, Int)]): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t :: q if r(aux2(v(t._1, t._2))) => aux1(q, acc)
-      case t :: q => aux1(q, acc ::: t :: Nil)
+      case t :: q =>
+        val voisines = v(t._1,t._2) filter(element => !g.contains(element))
+        aux1(q, acc++voisines)
+      case Nil => acc
+    }
+
+    doublonRemove(aux1(g, List.empty), List.empty)
+  }
+
+  def naissancesG(g: Grille, r: Int => Boolean, v: (Int, Int) => List[(Int, Int)]): Grille = {
+    @tailrec
+    def aux1(grille: Grille, acc: Grille): Grille = grille match {
+      case t :: q if r(aux2(v(t._1,t._2))) => aux1(q, acc++List(t))
+      case t :: q => aux1(q, acc)
       case Nil => acc
     }
 
@@ -204,28 +210,20 @@ object Steiner {
       l.intersect(g).length
     }
 
-    aux1(g, List.empty)
-  }
-
-  def naissancesG(g: Grille, r: Int => Boolean, r2: Int => Boolean, v: (Int, Int) => List[(Int, Int)]): Grille = {
-    @tailrec
-    def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t :: q if r2(aux2(candidatesG(g, r, v))) => aux1(q, acc ::: t :: Nil)
-      case _ :: q => aux1(q, acc)
-      case Nil => acc
-    }
-
-    def aux2(l: List[(Int, Int)]): Int = {
-      l.intersect(g).length
-    }
-
-    aux1(g, List.empty)
+    doublonRemove(aux1(candidatesG(g,v), List.empty), List.empty)
   }
 
   @tailrec
-  def moteur(r: Int => Boolean, r2: Int => Boolean, v: (Int, Int) => List[(Int, Int)], init: Grille, n: Int): Unit = {
-    afficherGrille(init)
-    if (n > 0) moteur(r, r2, v, survivantesG(init, r, v) ++ naissancesG(init, r, r2, v), n - 1)
+  def moteur(rS: Int => Boolean, rV: Int => Boolean, v: (Int, Int) => List[(Int, Int)], init: Grille, n: Int): Unit = {
+    if (n > 0) {
+      afficherGrille(init)
+      println("********************************************************")
+      moteur(rS, rV, v, survivantesG(init, rS, v) ++ naissancesG(init, rV, v), n - 1)
+    }
+  }
+
+  def moteurJeuDeLaVie(n: Int) {
+    moteur(survitJDLV, naitJDLV, voisines8, chainesToGrille(liste), n)
   }
 
   def moteurFredkins(n: Int): Unit = {
@@ -236,7 +234,7 @@ object Steiner {
     (l + 1, c + 1)::(l - 1, c + 1)::(l - 1, c - 1)::(l + 1, c - 1)::Nil
   }
 
-  def variante(n: Int): Unit = {
+  def moteurVariante(n: Int): Unit = {
     moteur(survitF, naitF, voisineVariante, chainesToGrille(liste), n)
   }
 }
