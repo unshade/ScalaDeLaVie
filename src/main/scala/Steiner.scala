@@ -1,6 +1,6 @@
 import scala.annotation.tailrec
 
-object jeudelavie {
+object Steiner {
 
   type Grille = List[(Int, Int)]
 
@@ -10,8 +10,8 @@ object jeudelavie {
     "XXX")
 
   def main(args: Array[String]): Unit = {
-
-    jeuDeLaVie(chainesToGrille(liste), 10)
+    println(chainesToGrille(liste))
+    //jeuDeLaVie(chainesToGrille(liste), 5)
 
   }
 
@@ -87,6 +87,13 @@ object jeudelavie {
 
   // 3 Moteur de la simulation
 
+  @tailrec
+  def doublonRemove(g: Grille, acc: Grille): Grille = g match {
+    case t :: q if acc.contains(t._1, t._2) => doublonRemove(q, acc)
+    case t :: q => doublonRemove(q, t :: acc)
+    case Nil => acc
+  }
+
   def voisines8(l: Int, c: Int): List[(Int, Int)] = {
     (l, c - 1) :: (l - 1, c - 1) :: (l - 1, c) :: (l - 1, c + 1) :: (l, c + 1) :: (l + 1, c + 1) :: (l + 1, c) :: (l + 1, c - 1) :: Nil
   }
@@ -94,7 +101,7 @@ object jeudelavie {
   def survivantes(g: Grille): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t :: q if aux2(voisines8(t._1, t._2)) == 2 || aux2(voisines8(t._1, t._2)) == 3 => aux1(q, t :: acc)
+      case t :: q if aux2(voisines8(t._1, t._2)) == 2 || aux2(voisines8(t._1, t._2)) == 3 => aux1(q, acc ++ List(t))
       case _ :: q => aux1(q, acc)
       case Nil => acc
     }
@@ -103,28 +110,28 @@ object jeudelavie {
       l.intersect(g).length
     }
 
-    aux1(g, Nil)
+    doublonRemove(aux1(g, List.empty), Nil)
   }
 
   def candidates(g: Grille): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t :: q if aux2(voisines8(t._1, t._2)) == 2 || aux2(voisines8(t._1, t._2)) == 3 => aux1(q, acc)
-      case t :: q => aux1(q, t :: acc)
+      case t :: q =>
+        val voisines = voisines8(t._1,t._2) filter(element => !g.contains(element))
+        if(voisines != Nil)
+          aux1(q, acc++voisines)
+        else
+          aux1(q,acc)
       case Nil => acc
     }
 
-    def aux2(l: List[(Int, Int)]): Int = {
-      l.intersect(g).length
-    }
-
-    aux1(g, Nil)
+    doublonRemove(aux1(g, List.empty), List.empty)
   }
 
   def naissances(g: Grille): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t :: q if aux2(candidates(g)) == 3 => aux1(q, t :: acc)
+      case t :: q if aux2(voisines8(t._1,t._2)) == 3 => aux1(q, acc ++ List(t))
       case _ :: q => aux1(q, acc)
       case Nil => acc
     }
@@ -133,14 +140,18 @@ object jeudelavie {
       l.intersect(g).length
     }
 
-    aux1(g, Nil)
+    doublonRemove(aux1(candidates(g), List.empty), List.empty)
   }
 
   @tailrec
   def jeuDeLaVie(init: Grille, n: Int): Unit = {
     if (n > 0) {
+      println(survivantes(init))
+      println(candidates(init))
+      println(naissances(init))
       afficherGrille(init)
-      jeuDeLaVie(survivantes(init) ++ naissances(init), n - 1)
+      println()
+      jeuDeLaVie(survivantes(init) ++ naissances(init),n-1)
     }
   }
 
@@ -169,7 +180,7 @@ object jeudelavie {
   def survivantesG(g: Grille, r: Int => Boolean, v: (Int, Int) => List[(Int, Int)]): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t :: q if r(aux2(v(t._1, t._2))) => aux1(q, t :: acc)
+      case t :: q if r(aux2(v(t._1, t._2))) => aux1(q, acc ::: t :: Nil)
       case _ :: q => aux1(q, acc)
       case Nil => acc
     }
@@ -185,7 +196,7 @@ object jeudelavie {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
       case t :: q if r(aux2(v(t._1, t._2))) => aux1(q, acc)
-      case t :: q => aux1(q, t :: acc)
+      case t :: q => aux1(q, acc ::: t :: Nil)
       case Nil => acc
     }
 
@@ -199,7 +210,7 @@ object jeudelavie {
   def naissancesG(g: Grille, r: Int => Boolean, r2: Int => Boolean, v: (Int, Int) => List[(Int, Int)]): Grille = {
     @tailrec
     def aux1(grille: Grille, acc: Grille): Grille = grille match {
-      case t :: q if r2(aux2(candidatesG(g, r, v))) => aux1(q, t :: acc)
+      case t :: q if r2(aux2(candidatesG(g, r, v))) => aux1(q, acc ::: t :: Nil)
       case _ :: q => aux1(q, acc)
       case Nil => acc
     }
@@ -221,8 +232,8 @@ object jeudelavie {
     moteur(survitF, naitF, voisines4, chainesToGrille(liste), n)
   }
 
-  def voisineVariante(l: Int, c: Int): List[(Int, Int)] = {
-    (l + 1, c + 1) :: (l - 1, c + 1) :: (l - 1, c - 1) :: (l + 1, c - 1) :: Nil
+  def voisineVariante(l: Int, c: Int): List[(Int,Int)] = {
+    (l + 1, c + 1)::(l - 1, c + 1)::(l - 1, c - 1)::(l + 1, c - 1)::Nil
   }
 
   def variante(n: Int): Unit = {
