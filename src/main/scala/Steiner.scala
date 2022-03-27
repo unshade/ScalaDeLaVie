@@ -11,7 +11,8 @@ object Steiner {
 
   def main(args: Array[String]): Unit = {
 
-    moteurJeuDeLaVie( 5)
+    // test jeuDeLaVie
+    moteurVariante(5)
 
   }
 
@@ -164,11 +165,11 @@ object Steiner {
   }
 
   def naitF(n: Int): Boolean = {
-    n == 1 || n == 3
+    n % 2 == 1
   }
 
   def survitF(n: Int): Boolean = {
-    n == 1  || n == 3
+    n % 2 == 1
   }
 
   def survivantesG(g: Grille, r: Int => Boolean, v: (Int, Int) => List[(Int, Int)]): Grille = {
